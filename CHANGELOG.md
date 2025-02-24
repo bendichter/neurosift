@@ -1,5 +1,13 @@
 # Changes
 
+## February 24, 2025
+- Improved raster plot controls UI:
+  - Removed redundant "Items" label from units controller
+  - Added horizontal stacking for units and time window controls
+  - Improved visual grouping with consistent styling
+  - Moved block size info to recording info line for better organization
+  - Improved responsive layout to maintain control widths when window narrows
+
 ## February 22, 2025
 - Remove tab parameter from URL query string once page has been loaded
 

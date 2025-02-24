@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import React, { FunctionComponent } from "react";
 import { ControlButton } from "./ControlButton";
 
 export type TimeRangeControlsProps = {
@@ -11,6 +11,7 @@ export type TimeRangeControlsProps = {
   onShiftTimeLeft: () => void;
   onShiftTimeRight: () => void;
   minDuration?: number;
+  label?: string;
 };
 
 export const TimeRangeControls: FunctionComponent<TimeRangeControlsProps> = ({
@@ -23,6 +24,7 @@ export const TimeRangeControls: FunctionComponent<TimeRangeControlsProps> = ({
   onShiftTimeLeft,
   onShiftTimeRight,
   minDuration = 0.2,
+  label = "Time Window",
 }) => {
   if (visibleTimeStart === undefined || visibleDuration === undefined)
     return null;
@@ -52,7 +54,8 @@ export const TimeRangeControls: FunctionComponent<TimeRangeControlsProps> = ({
           minWidth: "110px",
         }}
       >
-        <span style={{ fontWeight: 500 }}>{visibleDuration.toFixed(2)}s</span>
+        <span style={{ fontWeight: 500 }}>{label}</span>
+        <span style={{ color: "#868e96", marginLeft: "8px" }}>{visibleDuration.toFixed(2)}s</span>
         <span style={{ color: "#868e96" }}>at</span>
         <span style={{ fontWeight: 500 }}>{visibleTimeStart.toFixed(2)}s</span>
       </div>
@@ -136,7 +139,7 @@ export const ItemRangeControls: FunctionComponent<ItemRangeControlsProps> = ({
             "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
           display: "flex",
           alignItems: "center",
-          gap: "4px",
+          gap: "8px",
           minWidth: "70px",
         }}
       >
@@ -205,29 +208,38 @@ export const CondensedLayout: FunctionComponent<{
 
 export const FullLayout: FunctionComponent<{
   children: React.ReactNode;
-}> = ({ children }) => (
-  <div
-    style={{
-      padding: "10px",
-      marginBottom: "15px",
-      background: "#f5f5f5",
-      borderRadius: "5px",
-      fontFamily: "sans-serif",
-      fontSize: "0.9rem",
-    }}
-  >
+}> = ({ children }) => {
+  // Convert children to array to group them
+  const childrenArray = React.Children.toArray(children);
+  const recordingInfo = childrenArray[0]; // Recording info row
+  const controls = childrenArray.slice(1); // The rest are control groups
+
+  return (
     <div
       style={{
-        display: "grid",
-        gridTemplateColumns: "auto 1fr",
-        gap: "4px 12px",
-        alignItems: "baseline",
+        padding: "10px",
+        marginBottom: "15px",
+        background: "#f5f5f5",
+        borderRadius: "5px",
+        fontFamily: "sans-serif",
+        fontSize: "0.9rem",
       }}
     >
-      {children}
+      <div style={{ marginBottom: "12px" }}>{recordingInfo}</div>
+      <div
+        style={{
+          display: "flex",
+          gap: "12px",
+          alignItems: "center",
+          flexWrap: "nowrap",
+          overflowX: "auto",
+        }}
+      >
+        {controls}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export type SeparationControlsProps = {
   channelSeparation: number;
