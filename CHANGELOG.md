@@ -1,5 +1,8 @@
 # Changes
 
+## February 25, 2025
+- Modified ResponsiveLayout to determine mobile view based on initial browser width rather than using media queries and dynamic resizing
+
 ## February 24, 2025
 - Added AI context integration for DandisetOverview component to provide comprehensive dataset information including name, description, contributors, dataset details, license, citation, keywords, species, and research methods
 - Improved visibility of x-axis label in Raster Plot by adjusting font properties and grid display

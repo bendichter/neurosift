@@ -19,17 +19,13 @@ const ResponsiveLayout: FunctionComponent<ResponsiveLayoutProps> = ({
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia(`(max-width: ${mobileBreakpoint}px)`);
-    setIsMobile(mediaQuery.matches);
-
-    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
-    mediaQuery.addEventListener("change", handler);
-    return () => mediaQuery.removeEventListener("change", handler);
-  }, [mobileBreakpoint]);
+    setIsMobile(window.innerWidth <= mobileBreakpoint);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty dependency array means this only runs once on mount
 
   if (isMobile) {
     // Stack the panels vertically on mobile
-    const topHeight = Math.max(300, Math.min(550, height * 0.6));
+    const topHeight = Math.max(200, Math.min(500, height * 0.4));
     const bottomHeight = height - topHeight;
 
     return (
