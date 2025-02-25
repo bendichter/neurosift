@@ -73,7 +73,7 @@ export const useNwbFileOverview = (url: string | null) => {
         const nwbVersion = rootGroup?.attrs["nwb_version"] || "";
         setNwbFileOverview({ items: itemsSorted, nwbVersion });
       } catch {
-        setNwbFileOverview({ error: "Failed to load NWB file overview" });
+        setError("Failed to load NWB file overview");
       }
     };
     load();
