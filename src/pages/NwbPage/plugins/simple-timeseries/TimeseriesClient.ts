@@ -95,6 +95,7 @@ class TimeseriesClient {
     timestamps: number[];
     data: number[][]; // one for each channel
   }> {
+    if (iEnd < iStart) throw new Error("iEnd must be >= iStart");
     const timestamps = await this.timestampsClient.getTimestampsForDataIndices(
       iStart,
       iEnd,
@@ -138,8 +139,13 @@ class TimeseriesClient {
     channelStart: number,
     channelEnd: number,
   ) {
+    if (tStart > tEnd) throw new Error("tStart must be <= tEnd");
     const iStart = await this.timestampsClient.getDataIndexForTime(tStart);
     const iEnd = await this.timestampsClient.getDataIndexForTime(tEnd);
+    if (iStart > iEnd)
+      throw new Error(
+        `iStart must be <= iEnd: ${iStart} ${iEnd} ${tStart} ${tEnd}`,
+      );
     return this.getDataForIndices(iStart, iEnd, channelStart, channelEnd);
   }
 }
