@@ -175,7 +175,7 @@ const TreeNode: React.FC<TreeNodeProps> = ({
                 >
                   {key}:{" "}
                   {typeof value === "object"
-                    ? JSON.stringify(value)
+                    ? JSON.stringify(value, null, 2)
                     : String(value)}
                 </div>
               ))}
@@ -220,6 +220,7 @@ type Props = {
   path: string;
   objectType: "group" | "dataset";
   onOpenObjectInNewTab?: (path: string) => void;
+  width?: number;
 };
 
 const DefaultView: React.FC<Props> = ({
@@ -227,6 +228,7 @@ const DefaultView: React.FC<Props> = ({
   path,
   objectType,
   onOpenObjectInNewTab,
+  width,
 }) => {
   if (objectType === "dataset") {
     return (
@@ -235,6 +237,7 @@ const DefaultView: React.FC<Props> = ({
         path={path}
         objectType={objectType}
         onOpenObjectInNewTab={onOpenObjectInNewTab}
+        width={width}
       />
     );
   } else {
@@ -244,6 +247,7 @@ const DefaultView: React.FC<Props> = ({
         path={path}
         objectType={objectType}
         onOpenObjectInNewTab={onOpenObjectInNewTab}
+        width={width}
       />
     );
   }
@@ -253,12 +257,13 @@ const DefaultGroupView: React.FC<Props> = ({
   nwbUrl,
   path,
   onOpenObjectInNewTab,
+  width,
 }) => {
   const group = useHdf5Group(nwbUrl, path);
   if (!group) return <>Loading group...</>;
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: 0, position: "relative", width, overflow: "auto" }}>
       <TreeNode
         name={path.split("/").pop() || path}
         path={path}
@@ -280,7 +285,7 @@ const DefaultDatasetView: React.FC<Props> = ({
   if (!dataset) return <>Loading dataset...</>;
 
   return (
-    <div style={{ padding: "20px" }}>
+    <div style={{ padding: 0, position: "relative", overflow: "auto" }}>
       <TreeNode
         name={path.split("/").pop() || path}
         path={path}

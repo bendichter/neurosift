@@ -1,12 +1,11 @@
 # Changes
 
+## February 25, 2025
+- Modified ResponsiveLayout to determine mobile view based on initial browser width rather than using media queries and dynamic resizing
+
 ## February 24, 2025
-- Improved raster plot controls UI:
-  - Removed redundant "Items" label from units controller
-  - Added horizontal stacking for units and time window controls
-  - Improved visual grouping with consistent styling
-  - Moved block size info to recording info line for better organization
-  - Improved responsive layout to maintain control widths when window narrows
+- Added AI context integration for DandisetOverview component to provide comprehensive dataset information including name, description, contributors, dataset details, license, citation, keywords, species, and research methods
+- Improved visibility of x-axis label in Raster Plot by adjusting font properties and grid display
 
 ## February 22, 2025
 - Remove tab parameter from URL query string once page has been loaded

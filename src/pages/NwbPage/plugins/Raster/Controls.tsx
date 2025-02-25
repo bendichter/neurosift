@@ -77,7 +77,6 @@ export const Controls: FunctionComponent<ControlsProps> = ({
   totalNumUnits,
   visibleTimeStart,
   visibleDuration,
-  blockSizeSec,
   onDecreaseUnits,
   onIncreaseUnits,
   onShiftUnitsLeft,

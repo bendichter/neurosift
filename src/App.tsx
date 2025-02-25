@@ -2,7 +2,6 @@ import { useWindowDimensions } from "@fi-sci/misc";
 import {
   AIComponentRegistryProvider,
   AIRegisteredComponent,
-  AIComponentCallback,
   useAIComponentRegistry,
 } from "./ai-integration/AIComponentRegistry";
 import { useEffect } from "react";
@@ -377,26 +376,8 @@ const useRegisterAIComponent = () => {
   useEffect(() => {
     const registration: AIRegisteredComponent = {
       id: "App",
-      context: {
-        currentRoute: location.pathname,
-        params: Object.fromEntries(searchParams.entries()),
-      },
-      callbacks: [
-        {
-          id: "navigate",
-          description: aiRouteContextDescription,
-          parameters: {
-            route: {
-              type: "string",
-              description: "The route to navigate to. Be sure to provide this.",
-              required: true,
-            },
-          },
-          callback: (params: { route: string }) => {
-            navigate(params.route);
-          },
-        } as AIComponentCallback,
-      ],
+      context: aiContextDescription,
+      callbacks: [],
     };
     registerComponentForAI(registration);
     return () => unregisterComponentForAI("route");
@@ -409,21 +390,9 @@ const useRegisterAIComponent = () => {
   ]);
 };
 
-const aiRouteContextDescription = `
-Navigate to a new route in the Neurosift application.
-
-Possible routes are:
-/ (Home page)
-/dandi (Browse DANDI - once you get there then you'll be able to do searches)
-/dandiset/:dandisetId (View a DANDI dataset)
-/openneuro (Browse OpenNeuro - once you get there then you'll be able to do searches)
-/openneuro-dataset/:datasetId (View an OpenNeuro dataset)
-/settings (View the settings page to set API keys)
-/guide (View the NWB Viewer Guide)
-
-If the user wants to search for a dandiset or a dataset, then you should first navigate to the appropriate route, and then you can see what interactions are available at that point.
-
-When you call the navigate callback, be sure that the callbackId is "navigate" and that you provide the route parameter with the route you want to navigate to.
+const aiContextDescription = `
+The user can click the Neurosift logo or title to navigate to the home page.
+The user can click the Settings icon in the upper right part of the window to navigate to the settings page where they can configure Neurosift including setting API keys.
 `;
 
 export default App;

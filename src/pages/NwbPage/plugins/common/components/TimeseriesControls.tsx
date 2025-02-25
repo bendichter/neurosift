@@ -112,7 +112,7 @@ export const ItemRangeControls: FunctionComponent<ItemRangeControlsProps> = ({
   visibleStartIndex,
   numVisibleItems,
   totalNumItems,
-  itemLabel = "Items",
+  itemLabel = "",
   onDecreaseItems,
   onIncreaseItems,
   onShiftItemsLeft,
@@ -143,7 +143,7 @@ export const ItemRangeControls: FunctionComponent<ItemRangeControlsProps> = ({
           minWidth: "70px",
         }}
       >
-        <span style={{ fontWeight: 500 }}>{itemLabel}</span>
+        {itemLabel && <span style={{ fontWeight: 500 }}>{itemLabel}</span>}
         <span style={{ color: "#868e96" }}>
           {visibleStartIndex}-
           {Math.min(visibleStartIndex + numVisibleItems, totalNumItems) - 1} of{" "}

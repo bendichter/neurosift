@@ -1,10 +1,4 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-/**
- * Represents the state/context of an AI-enabled component
- */
-export type AIComponentState = {
-  [key: string]: string | number | boolean | object | null | undefined;
-};
 
 /**
  * Represents a callback that can be triggered on an AI-enabled component
@@ -27,7 +21,7 @@ export interface AIComponentCallback {
  */
 export interface AIRegisteredComponent {
   id: string;
-  context: AIComponentState;
+  context: string;
   callbacks: Array<AIComponentCallback>;
 }
 
@@ -38,7 +32,7 @@ export interface AIContextUpdateMessage {
   type: "aiContextUpdate";
   components: Array<{
     id: string;
-    context: AIComponentState;
+    context: string;
     availableCallbacks: Array<{
       componentId: string;
       id: string;

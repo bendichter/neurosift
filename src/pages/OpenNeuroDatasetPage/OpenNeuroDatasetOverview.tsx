@@ -2,43 +2,24 @@ import { Box, Typography } from "@mui/material";
 import { FunctionComponent } from "react";
 import ScrollY from "@components/ScrollY";
 import { formatBytes } from "@shared/util/formatBytes";
+import { OpenNeuroDatasetInfo } from "./types";
+import useRegisterOpenNeuroDatasetOverviewAIComponent from "./useRegisterOpenNeuroDatasetOverviewAIComponent";
 
 interface OpenNeuroDatasetOverviewProps {
   width: number;
   height: number;
-  datasetInfo: {
-    id: string;
-    snapshot: {
-      tag: string;
-      created: string;
-      size: number;
-      description: {
-        Name: string;
-        Authors: string[];
-        DatasetDOI?: string;
-        License?: string;
-        Acknowledgements?: string;
-        Funding?: string;
-        ReferencesAndLinks?: string[];
-      };
-      analytics: {
-        downloads: number;
-        views: number;
-      };
-      summary: {
-        modalities: string[];
-        sessions: string[];
-        subjects: string[];
-        totalFiles: number;
-      };
-    };
-  };
+  datasetInfo: OpenNeuroDatasetInfo;
 }
 
 const OpenNeuroDatasetOverview: FunctionComponent<
   OpenNeuroDatasetOverviewProps
 > = ({ width, height, datasetInfo }) => {
   const { snapshot } = datasetInfo;
+
+  // Register AI overview component
+  useRegisterOpenNeuroDatasetOverviewAIComponent({
+    datasetInfo,
+  });
 
   return (
     <ScrollY width={width} height={height}>

@@ -12,11 +12,7 @@ import LaunchIcon from "@mui/icons-material/Launch";
 import SearchIcon from "@mui/icons-material/Search";
 import HistoryIcon from "@mui/icons-material/History";
 import { FunctionComponent, useCallback, useEffect, useState } from "react";
-import {
-  AIComponentCallback,
-  AIRegisteredComponent,
-  useAIComponentRegistry,
-} from "../../AIContext";
+import { useAIComponentRegistry } from "../../AIContext";
 import ScrollY from "@components/ScrollY";
 import OpenNeuroDatasetResult from "./OpenNeuroDatasetResult";
 import { getRecentOpenNeuroDatasets } from "../util/recentOpenNeuroDatasets";
@@ -231,7 +227,6 @@ const OpenNeuroPage: FunctionComponent<OpenNeuroPageProps> = ({
     searchResults,
     isSearching,
     lastSearchedText,
-    setSearchState,
   });
 
   return (
@@ -342,64 +337,45 @@ const useRegisterAIComponent = ({
   searchResults,
   isSearching,
   lastSearchedText,
-  setSearchState,
 }: {
   searchState: SearchState;
   searchResults: OpenNeuroDataset[];
   isSearching: boolean;
   lastSearchedText: string;
-  setSearchState: (
-    state: SearchState | ((prev: SearchState) => SearchState),
-  ) => void;
 }) => {
   const { registerComponentForAI, unregisterComponentForAI } =
     useAIComponentRegistry();
-
   useEffect(() => {
-    const context = {
-      searchText: searchState.searchText,
-      // let's only communicate some of the details
-      searchResults: searchResults.map((result) => ({
-        id: result.id,
-        name: result.latestSnapshot.description.Name,
-        authors: result.latestSnapshot.description.Authors,
-      })),
-      isSearching,
-      lastSearchedText,
-    };
+    const context = `
+The user is viewing the OpenNeuroPage where they can search for OpenNeuro datasets.
+${isSearching ? "The page is currently performing a search." : ""}
+${searchState.searchText ? `Current search text: "${searchState.searchText}"` : "No search text entered."}
+${lastSearchedText ? `Last searched text: "${lastSearchedText}"` : ""}
+${searchResults.length > 0 ? `Found ${searchResults.length} datasets:` : "No search results yet."}
+${searchResults
+  .slice(0, 10)
+  .map(
+    (dataset) => `
+  - Dataset ${dataset.id}:
+    Name: ${dataset.latestSnapshot.description.Name}
+    Authors: ${dataset.latestSnapshot.description.Authors.join(", ")}
+    Files: ${dataset.latestSnapshot.summary.totalFiles}
+    Modalities: ${dataset.latestSnapshot.summary.modalities.join(", ")}
+`,
+  )
+  .join("")}
 
-    const registration: AIRegisteredComponent = {
+The user can interact with the page by:
+- Entering search text in the search box
+- Clicking the search button or pressing Enter to perform a search
+- Clicking on recent datasets to view them
+- Clicking on search results to view dataset details
+`;
+    const registration = {
       id: "OpenNeuroPage",
       context,
-      callbacks: [
-        {
-          id: "openneuro_search",
-          description:
-            "Perform a search for OpenNeuro datasets. Provide the searchText parameter with keywords to search for datasets.",
-          parameters: {
-            searchText: {
-              type: "string",
-              description:
-                "Text to search for in dataset names, descriptions, and authors",
-            },
-          },
-          callback: (parameters: { searchText: string }) => {
-            if (!parameters.searchText) {
-              console.warn(
-                "openneuro_search callback requires a searchText parameter",
-              );
-              return;
-            }
-            setSearchState((prev: SearchState) => ({
-              ...prev,
-              searchText: parameters.searchText,
-              scheduledSearch: true,
-            }));
-          },
-        } as AIComponentCallback,
-      ],
+      callbacks: [],
     };
-
     registerComponentForAI(registration);
     return () => unregisterComponentForAI("OpenNeuroPage");
   }, [
@@ -409,7 +385,6 @@ const useRegisterAIComponent = ({
     searchResults,
     isSearching,
     lastSearchedText,
-    setSearchState,
   ]);
 };
 

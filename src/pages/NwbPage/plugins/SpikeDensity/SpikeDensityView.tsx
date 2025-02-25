@@ -91,16 +91,14 @@ const SpikeDensityView: FunctionComponent<Props> = ({
       fetchJobStatus,
     }: typeof multiscaleJob,
   ) => (
-    <div style={{ marginBottom: "20px" }}>
-      <JobStatusHandler
-        job={job}
-        error={error}
-        isRefreshing={isRefreshing}
-        onSubmit={submitJob}
-        onRefresh={fetchJobStatus}
-        jobLabel={label}
-      />
-    </div>
+    <JobStatusHandler
+      job={job}
+      error={error}
+      isRefreshing={isRefreshing}
+      onSubmit={submitJob}
+      onRefresh={fetchJobStatus}
+      jobLabel={label}
+    />
   );
 
   const [rastermapOutput, setRastermapOutput] =
@@ -116,6 +114,25 @@ const SpikeDensityView: FunctionComponent<Props> = ({
     multiscaleJob.job?.status === "completed" &&
     rastermapJob.job?.status === "completed" &&
     rastermapOutput !== null;
+
+  const showRightPanel =
+    multiscaleJob.job?.status === "completed" &&
+    multiscaleJob.result?.output_url;
+
+  const leftPanel = (
+    <LeftPanel
+      multiscaleJob={multiscaleJob}
+      rastermapJob={rastermapJob}
+      showRastermapToggle={showRastermapToggle}
+      useRastermapSorting={useRastermapSorting}
+      setUseRastermapSorting={setUseRastermapSorting}
+      renderJobStatus={renderJobStatus}
+    />
+  );
+
+  if (!showRightPanel) {
+    return leftPanel;
+  }
 
   return (
     <div
@@ -136,14 +153,7 @@ const SpikeDensityView: FunctionComponent<Props> = ({
           height={height || 600}
           initialSplitterPosition={300}
         >
-          <LeftPanel
-            multiscaleJob={multiscaleJob}
-            rastermapJob={rastermapJob}
-            showRastermapToggle={showRastermapToggle}
-            useRastermapSorting={useRastermapSorting}
-            setUseRastermapSorting={setUseRastermapSorting}
-            renderJobStatus={renderJobStatus}
-          />
+          {leftPanel}
           <SpikeDensityPlotWidget
             width={width || 800}
             height={height || 600}
@@ -191,22 +201,22 @@ const LeftPanel: FunctionComponent<LeftPanelProps> = ({
   height,
 }) => {
   return (
-    <div style={{ height: height || 600, overflowY: "auto", padding: "20px" }}>
-      <div style={{ marginBottom: "20px" }}>
+    <div style={{ height, overflowY: "auto", padding: "20px" }}>
+      <span>
         {renderJobStatus(
           "Multi-scale Spike Density",
           multiscaleJob,
           "Compute Multi-scale Spike Density",
         )}
-      </div>
+      </span>
 
-      <div style={{ marginBottom: "20px" }}>
+      <span>
         {renderJobStatus(
           "Rastermap Sorting",
           rastermapJob,
           "Compute Rastermap Sorting",
         )}
-      </div>
+      </span>
 
       {showRastermapToggle && (
         <div style={{ marginBottom: "20px" }}>

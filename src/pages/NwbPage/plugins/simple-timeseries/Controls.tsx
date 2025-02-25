@@ -129,7 +129,7 @@ export const Controls: FunctionComponent<ControlsProps> = ({
               onIncreaseItems={onIncreaseChannels}
               onShiftItemsLeft={onShiftChannelsLeft}
               onShiftItemsRight={onShiftChannelsRight}
-              itemLabel="Chans"
+              itemLabel=""
             />
 
             {numVisibleChannels > 1 && (

@@ -45,14 +45,32 @@ const RasterViewPlot = ({ plotData }: Props) => {
     const layout = {
       title: "Spike Raster Plot",
       xaxis: {
-        title: "Time (s)",
+        title: {
+          text: "Time (s)",
+          font: {
+            size: 14,
+            color: "#000",
+          },
+          standoff: 15,
+        },
+        showgrid: false,
+        showticklabels: true,
+        showline: false,
         range: [plotData.startTime, plotData.startTime + plotData.duration],
       },
       yaxis: {
-        title: "Units",
+        title: {
+          text: "Unit",
+          font: {
+            size: 14,
+            color: "#000",
+          },
+          standoff: 15,
+        },
         ticktext: plotData.unitIds,
         tickvals: plotData.unitIds.map((_, i) => i),
         range: [-1, plotData.unitIds.length],
+        zeroline: false,
       },
       showlegend: false,
       height: Math.max(
