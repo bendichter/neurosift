@@ -1,7 +1,6 @@
 import { FunctionComponent } from "react";
 import {
   CondensedLayout,
-  FullLayout,
   ItemRangeControls,
   TimeRangeControls,
 } from "../common/components/TimeseriesControls";
