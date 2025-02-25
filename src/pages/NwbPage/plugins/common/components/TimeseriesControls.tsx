@@ -55,7 +55,9 @@ export const TimeRangeControls: FunctionComponent<TimeRangeControlsProps> = ({
         }}
       >
         <span style={{ fontWeight: 500 }}>{label}</span>
-        <span style={{ color: "#868e96", marginLeft: "8px" }}>{visibleDuration.toFixed(2)}s</span>
+        <span style={{ color: "#868e96", marginLeft: "8px" }}>
+          {visibleDuration.toFixed(2)}s
+        </span>
         <span style={{ color: "#868e96" }}>at</span>
         <span style={{ fontWeight: 500 }}>{visibleTimeStart.toFixed(2)}s</span>
       </div>

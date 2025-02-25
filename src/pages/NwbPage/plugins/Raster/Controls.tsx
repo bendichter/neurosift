@@ -3,7 +3,6 @@ import {
   CondensedLayout,
   FullLayout,
   ItemRangeControls,
-  LabeledRow,
   TimeRangeControls,
 } from "../common/components/TimeseriesControls";
 
@@ -107,7 +106,7 @@ export const Controls: FunctionComponent<ControlsProps> = ({
       >
         <span>
           Start: {startTime.toFixed(2)} s, Duration:{" "}
-          {(endTime - startTime).toFixed(2)} s • Block Size: {blockSizeSec} seconds
+          {(endTime - startTime).toFixed(2)} s
         </span>
       </div>
 
