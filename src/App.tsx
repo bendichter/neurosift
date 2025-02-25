@@ -184,7 +184,13 @@ const AppContent = () => {
   const location = useLocation();
   useEffect(() => {
     // send to thac
-    sendUrlUpdate(location.pathname + location.search);
+    sendUrlUpdate(
+      window.location.protocol +
+        "//" +
+        window.location.host +
+        location.pathname +
+        location.search,
+    );
   }, [location]);
 
   const { width, height } = useWindowDimensions();

@@ -4,15 +4,17 @@ import { getHdf5Group } from "./hdf5Interface";
 import { generalLabelMap } from "./nwbConfig";
 import { NwbFileOverview, GeneralLabelMapItem } from "./types";
 
-type NwbFileOverviewResult = NwbFileOverview | { error: string } | null;
+type NwbFileOverviewResult = NwbFileOverview | null;
 
 export const useNwbFileOverview = (url: string | null) => {
   const [nwbFileOverview, setNwbFileOverview] =
     useState<NwbFileOverviewResult>(null);
+  const [error, setError] = useState<string | null>(null);
   useEffect(() => {
     if (!url) return;
     setNwbFileOverview(null);
     const load = async () => {
+      setError(null);
       try {
         const rootGroup = await getHdf5Group(url, "/");
         if (!rootGroup) {
@@ -20,7 +22,7 @@ export const useNwbFileOverview = (url: string | null) => {
           const errorMessage = isDandiUrl
             ? "Unable to load the root group. If this is an embargoed Dandiset, you must enter your DANDI API Key in the settings page."
             : "Unable to load the root group.";
-          setNwbFileOverview({ error: errorMessage });
+          setError(errorMessage);
           return;
         }
         const generalGroup = await getHdf5Group(url, "/general");
@@ -76,5 +78,5 @@ export const useNwbFileOverview = (url: string | null) => {
     };
     load();
   }, [url]);
-  return nwbFileOverview;
+  return { nwbFileOverview, error };
 };

@@ -1,6 +1,7 @@
 import { Box, Tab, Tabs } from "@mui/material";
 import { FunctionComponent, useEffect } from "react";
 import { useSearchParams } from "react-router-dom";
+import useRegisterNwbAIComponent from "./useRegisterNwbAIComponent";
 import ResponsiveLayout from "@components/ResponsiveLayout";
 import ScrollY from "@components/ScrollY";
 import { useDandisetVersionInfo } from "../DandisetPage/useDandisetVersionInfo";
@@ -88,9 +89,17 @@ const LeftArea: FunctionComponent<LeftAreaProps> = ({
     false,
     dandisetResponse || null,
   );
-  const nwbFileOverview = useNwbFileOverview(nwbUrl);
+  const { nwbFileOverview } = useNwbFileOverview(nwbUrl);
   const tabBarHeight = TAB_BAR_HEIGHT;
   const contentHeight = height - tabBarHeight;
+
+  useRegisterNwbAIComponent({
+    nwbUrl,
+    dandisetId,
+    dandisetVersion,
+    nwbFileOverview,
+  });
+
   return (
     <div style={{ position: "absolute", width, height, overflow: "hidden" }}>
       <div
