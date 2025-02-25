@@ -152,9 +152,10 @@ class TimeseriesClient {
           iEnd,
         },
       );
-      throw new Error(
-        "iStart must be <= iEnd: Timestamps are probably not sorted",
-      );
+      return {
+        timestamps: [],
+        data: [],
+      };
     }
     return this.getDataForIndices(iStart, iEnd, channelStart, channelEnd);
   }
