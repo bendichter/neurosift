@@ -143,9 +143,18 @@ class TimeseriesClient {
     const iStart = await this.timestampsClient.getDataIndexForTime(tStart);
     const iEnd = await this.timestampsClient.getDataIndexForTime(tEnd);
     if (iStart > iEnd)
-      throw new Error(
-        `iStart must be <= iEnd: ${iStart} ${iEnd} ${tStart} ${tEnd}`,
+      console.warn(
+        "iStart must be <= iEnd: Timestamps are probably not sorted",
+        {
+          tStart,
+          tEnd,
+          iStart,
+          iEnd,
+        },
       );
+    throw new Error(
+      "iStart must be <= iEnd: Timestamps are probably not sorted",
+    );
     return this.getDataForIndices(iStart, iEnd, channelStart, channelEnd);
   }
 }
