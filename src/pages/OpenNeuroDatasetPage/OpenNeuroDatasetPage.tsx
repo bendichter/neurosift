@@ -6,41 +6,12 @@ import { addRecentOpenNeuroDataset } from "../util/recentOpenNeuroDatasets";
 import OpenNeuroDatasetOverview from "./OpenNeuroDatasetOverview";
 import { DatasetFile } from "../common/DatasetWorkspace/plugins/pluginInterface";
 import DatasetWorkspace from "../common/DatasetWorkspace/DatasetWorkspace";
+import useRegisterOpenNeuroAIComponent from "./useRegisterOpenNeuroAIComponent";
+import { OpenNeuroDatasetInfo } from "./types";
 
 type OpenNeuroDatasetPageProps = {
   width: number;
   height: number;
-};
-
-type OpenNeuroDatasetInfo = {
-  id: string;
-  created: string;
-  snapshot: {
-    id: string;
-    tag: string;
-    created: string;
-    size: number;
-    description: {
-      Name: string;
-      Authors: string[];
-      DatasetDOI?: string;
-      License?: string;
-      Acknowledgements?: string;
-      Funding?: string;
-      ReferencesAndLinks?: string[];
-    };
-    files: DatasetFile[];
-    summary: {
-      modalities: string[];
-      sessions: string[];
-      subjects: string[];
-      totalFiles: number;
-    };
-    analytics: {
-      downloads: number;
-      views: number;
-    };
-  };
 };
 
 interface FileResponse {
@@ -281,6 +252,13 @@ const OpenNeuroDatasetPage: FunctionComponent<OpenNeuroDatasetPageProps> = ({
       },
     [datasetId, datasetInfo?.snapshot.tag],
   );
+
+  // Register AI component
+  useRegisterOpenNeuroAIComponent({
+    datasetInfo,
+    error,
+    loading,
+  });
 
   if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;

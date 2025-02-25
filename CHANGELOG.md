@@ -1,5 +1,8 @@
 # Changes
 
+## February 24, 2025
+- Added AI context integration for DandisetOverview component to provide comprehensive dataset information including name, description, contributors, dataset details, license, citation, keywords, species, and research methods
+
 ## February 22, 2025
 - Remove tab parameter from URL query string once page has been loaded
 

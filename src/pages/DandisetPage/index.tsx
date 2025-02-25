@@ -7,7 +7,6 @@ import {
   useState,
 } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { AIComponentCallback, useAIComponentRegistry } from "../../AIContext";
 import DatasetWorkspace from "../common/DatasetWorkspace/DatasetWorkspace";
 import { DatasetFile } from "../common/DatasetWorkspace/plugins/pluginInterface";
 import {
@@ -21,6 +20,7 @@ import DandisetOverview from "./DandisetOverview";
 import { useDandisetVersionInfo } from "./useDandisetVersionInfo";
 import useQueryAssets from "./useQueryAssets";
 import useQueryDandiset from "./useQueryDandiset";
+import useRegisterAIComponent from "./useRegisterAIComponent";
 
 type DandisetPageProps = {
   width: number;
@@ -74,16 +74,6 @@ const DandisetPage: FunctionComponent<DandisetPageProps> = ({
       addRecentDandiset(dandisetId);
     }
   }, [dandisetId, staging]);
-
-  // Register AI component
-  useRegisterAIComponent({
-    dandisetId,
-    dandisetVersionInfo,
-    allAssets,
-    nwbFilesOnly,
-    setNwbFilesOnly,
-    incomplete,
-  });
 
   const topLevelFiles: DatasetFile[] = useMemo(() => {
     if (!allAssets) return [];
@@ -245,6 +235,16 @@ const DandisetPage: FunctionComponent<DandisetPageProps> = ({
 
   const initialTabId = useTakeInitialQueryParameter("tab");
 
+  // Register AI component
+  useRegisterAIComponent({
+    dandisetId,
+    dandisetVersionInfo,
+    allAssets,
+    nwbFilesOnly,
+    incomplete,
+    nwbFilesOwnlyControlVisible,
+  });
+
   if (!dandisetResponse || !dandisetVersionInfo) {
     return <div>Loading...</div>;
   }
@@ -277,96 +277,6 @@ const DandisetPage: FunctionComponent<DandisetPageProps> = ({
       />
     </ResponsiveLayout>
   );
-};
-
-const useRegisterAIComponent = ({
-  dandisetId,
-  dandisetVersionInfo,
-  allAssets,
-  nwbFilesOnly,
-  setNwbFilesOnly,
-  incomplete,
-}: {
-  dandisetId: string | undefined;
-  dandisetVersionInfo: DandisetVersionInfo | null;
-  allAssets: AssetsResponseItem[] | null;
-  nwbFilesOnly: boolean;
-  setNwbFilesOnly: (value: boolean) => void;
-  incomplete: boolean;
-}) => {
-  const { registerComponentForAI, unregisterComponentForAI } =
-    useAIComponentRegistry();
-  const navigate = useNavigate();
-  useEffect(() => {
-    const context = {
-      dandisetId,
-      dandisetVersion: dandisetVersionInfo?.version,
-      numFiles: allAssets?.length || 0,
-      hasNwbFiles: allAssets?.some((a) => a.path.endsWith(".nwb")) || false,
-      nwbFilesOnly,
-      incomplete,
-      files: allAssets
-        ?.map((a) => ({
-          path: a.path,
-          size: a.size,
-        }))
-        .slice(0, 50), // only send the first 50 files
-    };
-    const registration = {
-      id: "DandisetPage",
-      context,
-      callbacks: [
-        {
-          id: "toggle_nwb_files_only",
-          description:
-            "Toggle showing only NWB files in the dataset. This is useful when you want to focus on just the NWB files in a large dataset.",
-          parameters: {
-            show_only_nwb: {
-              type: "boolean",
-              description: "Whether to show only NWB files",
-              required: true,
-            },
-          },
-          callback: (parameters: { show_only_nwb: boolean }) => {
-            setNwbFilesOnly(parameters.show_only_nwb);
-          },
-        } as AIComponentCallback,
-        {
-          id: "open_nwb_file",
-          description: "Open an NWB file in the dataset for viewing.",
-          parameters: {
-            file_path: {
-              type: "string",
-              description: "The path of the file to open",
-              required: true,
-            },
-          },
-          callback: (parameters: { file_path: string }) => {
-            const file = allAssets?.find(
-              (a) => a.path === parameters.file_path,
-            );
-            if (file && file.path.endsWith(".nwb")) {
-              navigate(
-                `/nwb?url=https://api.dandiarchive.org/api/assets/${file.asset_id}/download/&dandisetId=${dandisetId}&dandisetVersion=${dandisetVersionInfo?.version || "draft"}`,
-              );
-            }
-          },
-        } as AIComponentCallback,
-      ],
-    };
-    registerComponentForAI(registration);
-    return () => unregisterComponentForAI("DandisetPage");
-  }, [
-    registerComponentForAI,
-    unregisterComponentForAI,
-    dandisetId,
-    dandisetVersionInfo,
-    allAssets,
-    nwbFilesOnly,
-    incomplete,
-    setNwbFilesOnly,
-    navigate,
-  ]);
 };
 
 export default DandisetPage;
