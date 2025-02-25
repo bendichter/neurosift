@@ -30,6 +30,7 @@ export interface AIRegisteredComponent {
  */
 export interface AIContextUpdateMessage {
   type: "aiContextUpdate";
+  title: string;
   components: Array<{
     id: string;
     context: string;

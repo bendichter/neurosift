@@ -15,6 +15,7 @@ export function sendContextUpdate(
 
   const message: AIContextUpdateMessage = {
     type: "aiContextUpdate",
+    title: "Neurosift",
     components: Array.from(registeredComponents.entries()).map(([id, reg]) => ({
       id,
       context: reg.context,

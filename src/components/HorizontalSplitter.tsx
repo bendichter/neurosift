@@ -88,8 +88,11 @@ const HorizontalSplitter: FunctionComponent<HorizontalSplitterProps> = ({
     setIsLeftPanelCollapsed(!isLeftPanelCollapsed);
   }, [isLeftPanelCollapsed, splitterPosition]);
 
-  const leftPanelWidth = isLeftPanelCollapsed ? 0 : splitterPosition - SPLITTER_WIDTH / 2;
-  const rightPanelWidth = width - (isLeftPanelCollapsed ? 0 : splitterPosition) - SPLITTER_WIDTH / 2;
+  const leftPanelWidth = isLeftPanelCollapsed
+    ? 0
+    : splitterPosition - SPLITTER_WIDTH / 2;
+  const rightPanelWidth =
+    width - (isLeftPanelCollapsed ? 0 : splitterPosition) - SPLITTER_WIDTH / 2;
 
   return (
     <div
@@ -120,7 +123,9 @@ const HorizontalSplitter: FunctionComponent<HorizontalSplitterProps> = ({
       <div
         style={{
           position: "absolute",
-          left: isLeftPanelCollapsed ? 0 : splitterPosition - SPLITTER_WIDTH / 2,
+          left: isLeftPanelCollapsed
+            ? 0
+            : splitterPosition - SPLITTER_WIDTH / 2,
           top: 0,
           width: SPLITTER_WIDTH,
           height,
@@ -146,10 +151,10 @@ const HorizontalSplitter: FunctionComponent<HorizontalSplitterProps> = ({
           }}
         />
         {/* Toggle button at the top of the splitter */}
-        <IconButton 
+        <IconButton
           onClick={toggleLeftPanel}
           size="small"
-          sx={{ 
+          sx={{
             backgroundColor: "#f0f0f0",
             border: "1px solid #ccc",
             boxShadow: "0 0 4px rgba(0, 0, 0, 0.2)",
@@ -169,7 +174,9 @@ const HorizontalSplitter: FunctionComponent<HorizontalSplitterProps> = ({
       <div
         style={{
           position: "absolute",
-          left: isLeftPanelCollapsed ? SPLITTER_WIDTH : splitterPosition + SPLITTER_WIDTH / 2,
+          left: isLeftPanelCollapsed
+            ? SPLITTER_WIDTH
+            : splitterPosition + SPLITTER_WIDTH / 2,
           top: 0,
           width: rightPanelWidth,
           height,
