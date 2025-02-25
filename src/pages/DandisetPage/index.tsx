@@ -6,7 +6,7 @@ import {
   useMemo,
   useState,
 } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import DatasetWorkspace from "../common/DatasetWorkspace/DatasetWorkspace";
 import { DatasetFile } from "../common/DatasetWorkspace/plugins/pluginInterface";
 import {
@@ -15,7 +15,6 @@ import {
   DandisetVersionInfo,
 } from "../DandiPage/dandi-types";
 import { addRecentDandiset } from "../util/recentDandisets";
-import useTakeInitialQueryParameter from "../util/useTakeInitialQueryValue";
 import DandisetOverview from "./DandisetOverview";
 import { useDandisetVersionInfo } from "./useDandisetVersionInfo";
 import useQueryAssets from "./useQueryAssets";
@@ -233,7 +232,8 @@ const DandisetPage: FunctionComponent<DandisetPageProps> = ({
     </label>
   ) : undefined;
 
-  const initialTabId = useTakeInitialQueryParameter("tab");
+  const [searchParams] = useSearchParams();
+  const initialTabId = searchParams.get("tab");
 
   // Register AI component
   useRegisterAIComponent({
