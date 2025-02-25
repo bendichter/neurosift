@@ -31,6 +31,17 @@ export function sendContextUpdate(
   window.parent.postMessage(message, "*");
 }
 
+export function sendUrlUpdate(url: string): void {
+  if (window.parent === window) return;
+
+  const message = {
+    type: "aiUrlUpdate",
+    url,
+  };
+
+  window.parent.postMessage(message, "*");
+}
+
 /**
  * Handles incoming AI messages from the parent window
  */

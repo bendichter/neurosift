@@ -28,25 +28,30 @@ export interface AIRegisteredComponent {
 /**
  * Shape of messages sent to parent window for AI context updates
  */
-export interface AIContextUpdateMessage {
-  type: "aiContextUpdate";
-  title: string;
-  components: Array<{
-    id: string;
-    context: string;
-    availableCallbacks: Array<{
-      componentId: string;
-      id: string;
-      description: string;
-      parameters: {
-        [key: string]: {
-          type: string;
+export type AIContextUpdateMessage =
+  | {
+      type: "aiContextUpdate";
+      title: string;
+      components: Array<{
+        id: string;
+        context: string;
+        availableCallbacks: Array<{
+          componentId: string;
+          id: string;
           description: string;
-        };
-      };
-    }>;
-  }>;
-}
+          parameters: {
+            [key: string]: {
+              type: string;
+              description: string;
+            };
+          };
+        }>;
+      }>;
+    }
+  | {
+      type: "aiUrlUpdate";
+      url: string;
+    };
 
 /**
  * Shape of messages received from parent window for callback execution
