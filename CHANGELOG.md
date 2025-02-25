@@ -1,9 +1,9 @@
 # Changes
 
 ## February 25, 2025
+- Added collapsible left panel with toggle button to improve workspace utilization
 - Rewrote NIFTI viewer implementation using niivue library to provide advanced visualization features including multiplanar views and 3D rendering
 - Added file size warning for NIFTI files larger than 100MB to prevent performance issues with large datasets
-
 - Modified ResponsiveLayout to determine mobile view based on initial browser width rather than using media queries and dynamic resizing
 
 ## February 24, 2025
