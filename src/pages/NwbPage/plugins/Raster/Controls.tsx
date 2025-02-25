@@ -86,52 +86,68 @@ export const Controls: FunctionComponent<ControlsProps> = ({
   onShiftTimeRight,
 }) => {
   return (
-    <FullLayout>
+    <div
+      style={{
+        padding: "10px",
+        marginBottom: "0",
+        background: "#f5f5f5",
+        borderRadius: "5px",
+        fontFamily: "sans-serif",
+        fontSize: "0.9rem",
+      }}
+    >
       <div
         style={{
           display: "flex",
-          gap: "8px",
+          flexWrap: "wrap",
+          gap: "12px",
           alignItems: "center",
-          background: "#f8f9fa",
-          padding: "8px 12px",
-          borderRadius: "6px",
-          border: "1px solid #e9ecef",
-          boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-          fontSize: "0.9rem",
-          color: "#495057",
-          fontFamily:
-            "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
-          whiteSpace: "nowrap",
         }}
       >
-        <span>
-          Start: {startTime.toFixed(2)} s, Duration:{" "}
-          {(endTime - startTime).toFixed(2)} s
-        </span>
+        <div
+          style={{
+            display: "inline-flex",
+            gap: "8px",
+            alignItems: "center",
+            padding: "8px 12px",
+            fontSize: "0.9rem",
+            color: "#212529", // Darker text color
+            fontFamily:
+              "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+            whiteSpace: "nowrap",
+            width: "auto",
+            fontWeight: 500, // Make text slightly bolder
+          }}
+        >
+          <span>
+            Start: {startTime.toFixed(2)} s, Duration:{" "}
+            {(endTime - startTime).toFixed(2)} s
+          </span>
+        </div>
+
+        <ItemRangeControls
+          visibleStartIndex={visibleUnitsStart}
+          numVisibleItems={numVisibleUnits}
+          totalNumItems={totalNumUnits}
+          itemLabel="Units"
+          onDecreaseItems={onDecreaseUnits}
+          onIncreaseItems={onIncreaseUnits}
+          onShiftItemsLeft={onShiftUnitsLeft}
+          onShiftItemsRight={onShiftUnitsRight}
+        />
+
+        <TimeRangeControls
+          visibleTimeStart={visibleTimeStart}
+          visibleDuration={visibleDuration}
+          timeseriesStartTime={startTime}
+          timeseriesDuration={endTime - startTime}
+          onDecreaseVisibleDuration={onDecreaseVisibleDuration}
+          onIncreaseVisibleDuration={onIncreaseVisibleDuration}
+          onShiftTimeLeft={onShiftTimeLeft}
+          onShiftTimeRight={onShiftTimeRight}
+          label="Time Window"
+        />
       </div>
-
-      <ItemRangeControls
-        visibleStartIndex={visibleUnitsStart}
-        numVisibleItems={numVisibleUnits}
-        totalNumItems={totalNumUnits}
-        itemLabel="Units"
-        onDecreaseItems={onDecreaseUnits}
-        onIncreaseItems={onIncreaseUnits}
-        onShiftItemsLeft={onShiftUnitsLeft}
-        onShiftItemsRight={onShiftUnitsRight}
-      />
-
-      <TimeRangeControls
-        visibleTimeStart={visibleTimeStart}
-        visibleDuration={visibleDuration}
-        timeseriesStartTime={startTime}
-        timeseriesDuration={endTime - startTime}
-        onDecreaseVisibleDuration={onDecreaseVisibleDuration}
-        onIncreaseVisibleDuration={onIncreaseVisibleDuration}
-        onShiftTimeLeft={onShiftTimeLeft}
-        onShiftTimeRight={onShiftTimeRight}
-        label="Time Window"
-      />
-    </FullLayout>
+    </div>
   );
 };

@@ -232,8 +232,8 @@ export const FullLayout: FunctionComponent<{
         style={{
           display: "flex",
           gap: "12px",
-          alignItems: "center",
-          flexWrap: "nowrap",
+          alignItems: "flex-start",
+          flexWrap: "wrap",
           overflowX: "auto",
         }}
       >
