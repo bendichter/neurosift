@@ -191,7 +191,7 @@ const LeftPanel: FunctionComponent<LeftPanelProps> = ({
   height,
 }) => {
   return (
-    <div style={{ height: height || 600, overflowY: "auto", padding: "20px" }}>
+    <div style={{ height, overflowY: "auto", padding: "20px" }}>
       <div style={{ marginBottom: "20px" }}>
         {renderJobStatus(
           "Multi-scale Spike Density",
