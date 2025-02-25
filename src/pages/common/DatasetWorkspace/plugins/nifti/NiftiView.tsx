@@ -18,21 +18,12 @@ const NiftiView: FunctionComponent<DatasetPluginProps> = ({
 
   return (
     <Box sx={{ width: "100%", height: "100%", overflow: "auto" }}>
-      {isLargeFile && !userConfirmedLoad ? (
+      {!userConfirmedLoad ? (
         <Alert
-          severity="warning"
-          action={
-            <Button
-              variant="contained"
-              color="primary"
-              size="large"
-              onClick={handleConfirm}
-              sx={{ mt: 2 }}
-            >
-              Load anyway
-            </Button>
-          }
+          severity={isLargeFile ? "warning" : "info"}
           sx={{
+            bgcolor: isLargeFile ? undefined : "transparent",
+            color: isLargeFile ? undefined : "inherit",
             p: 4,
             m: 4,
             display: "flex",
@@ -44,16 +35,39 @@ const NiftiView: FunctionComponent<DatasetPluginProps> = ({
               textAlign: "center",
               mb: 2,
             },
+            ...(!isLargeFile && {
+              "& .MuiAlert-icon": {
+                color: "inherit",
+              },
+            }),
+            maxWidth: 500,
           }}
+          action={
+            <Button
+              variant="contained"
+              color="primary"
+              size="large"
+              onClick={handleConfirm}
+              sx={{ mt: 2 }}
+            >
+              {isLargeFile ? "Load Anyway" : "Load"}
+            </Button>
+          }
         >
           This NIFTI file is {(file.size / (1024 * 1024)).toFixed(1)} MB in
           size.
           <br />
           <br />
-          Loading large files may impact performance.
+          {isLargeFile
+            ? "Loading large files may impact performance."
+            : "Click to proceed with loading the file."}
         </Alert>
       ) : (
-        <NiftiViewer fileUrl={fileUrl} width={width} height={height} />
+        <NiftiViewer
+          fileUrl={fileUrl}
+          width={(width || 600) - 30}
+          height={height}
+        />
       )}
     </Box>
   );
