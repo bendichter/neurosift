@@ -197,6 +197,7 @@ export const useTimeseriesData = (
       setIsLoading(false);
     };
     load().catch((err) => {
+      console.error(err);
       setError(err.message);
       setIsLoading(false);
     });

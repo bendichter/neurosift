@@ -1,6 +1,8 @@
 # Changes
 
 ## February 25, 2025
+- Added collapsible left panel with toggle button to improve workspace utilization
+- Added AI context integration for NwbPage to provide information about currently viewed NWB file including version, contents overview, and available interactions
 - Rewrote NIFTI viewer implementation using niivue library to provide advanced visualization features including multiplanar views and 3D rendering
 - Added file size warning for NIFTI files larger than 100MB to prevent performance issues with large datasets
 - Changed units controller navigation arrows in Raster plot from left/right to up/down for better visual representation

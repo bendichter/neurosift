@@ -15,6 +15,7 @@ export function sendContextUpdate(
 
   const message: AIContextUpdateMessage = {
     type: "aiContextUpdate",
+    title: "Neurosift",
     components: Array.from(registeredComponents.entries()).map(([id, reg]) => ({
       id,
       context: reg.context,
@@ -25,6 +26,17 @@ export function sendContextUpdate(
         parameters: cb.parameters,
       })),
     })),
+  };
+
+  window.parent.postMessage(message, "*");
+}
+
+export function sendUrlUpdate(url: string): void {
+  if (window.parent === window) return;
+
+  const message = {
+    type: "aiUrlUpdate",
+    url,
   };
 
   window.parent.postMessage(message, "*");

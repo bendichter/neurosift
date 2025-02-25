@@ -132,6 +132,7 @@ export class DirectSpikeTrainsClient {
     t2: number,
     // o: { canceler?: { onCancel: (() => void)[] } } = {},
   ) {
+    if (t1 > t2) throw Error("t1 must be <= t2");
     const ii = this.unitIds.indexOf(unitId.toString());
     if (ii < 0) throw Error(`Unexpected: unitId not found: ${unitId}`);
     if (!this.#timestampFinders[ii]) {
@@ -140,6 +141,7 @@ export class DirectSpikeTrainsClient {
     const finder = this.#timestampFinders[ii];
     const index1 = await finder.getDataIndexForTime(t1);
     const index2 = await finder.getDataIndexForTime(t2);
+    if (index1 > index2) throw Error("Unexpected: index1 > index2");
     const tt = await finder.getDataForIndices(index1, index2);
     return tt;
   }

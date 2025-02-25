@@ -34,6 +34,7 @@ import OpenNeuroDatasetPage from "./pages/OpenNeuroDatasetPage/OpenNeuroDatasetP
 import OpenNeuroPage from "./pages/OpenNeuroPage/OpenNeuroPage";
 import SettingsPage from "./pages/SettingsPage/SettingsPage";
 import EdfPage from "./pages/EdfPage/EdfPage";
+import { sendUrlUpdate } from "./ai-integration/messaging/windowMessaging";
 
 const theme = createTheme({
   palette: {
@@ -179,6 +180,18 @@ const AppContent = () => {
   const [searchParams] = useSearchParams();
 
   useRegisterAIComponent();
+
+  const location = useLocation();
+  useEffect(() => {
+    // send to thac
+    sendUrlUpdate(
+      window.location.protocol +
+        "//" +
+        window.location.host +
+        location.pathname +
+        location.search,
+    );
+  }, [location]);
 
   const { width, height } = useWindowDimensions();
   const hideAppBar = searchParams.get("embedded") === "1";
