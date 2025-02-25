@@ -3,7 +3,7 @@
 ## February 25, 2025
 - Rewrote NIFTI viewer implementation using niivue library to provide advanced visualization features including multiplanar views and 3D rendering
 - Added file size warning for NIFTI files larger than 100MB to prevent performance issues with large datasets
-
+- Changed units controller navigation arrows in Raster plot from left/right to up/down for better visual representation
 - Modified ResponsiveLayout to determine mobile view based on initial browser width rather than using media queries and dynamic resizing
 
 ## February 24, 2025

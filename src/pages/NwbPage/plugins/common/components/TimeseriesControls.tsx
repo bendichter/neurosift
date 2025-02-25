@@ -82,7 +82,7 @@ export const TimeRangeControls: FunctionComponent<TimeRangeControlsProps> = ({
           disabled={visibleTimeStart <= timeseriesStartTime}
           title="Move backward in time"
         >
-          ⟵
+          ←
         </ControlButton>
         <ControlButton
           onClick={onShiftTimeRight}
@@ -92,7 +92,7 @@ export const TimeRangeControls: FunctionComponent<TimeRangeControlsProps> = ({
           }
           title="Move forward in time"
         >
-          ⟶
+          →
         </ControlButton>
       </div>
     </div>
@@ -174,14 +174,14 @@ export const ItemRangeControls: FunctionComponent<ItemRangeControlsProps> = ({
           disabled={visibleStartIndex === 0}
           title="Move to previous items"
         >
-          ⟵
+          ↓
         </ControlButton>
         <ControlButton
           onClick={onShiftItemsRight}
           disabled={visibleStartIndex + numVisibleItems >= totalNumItems}
           title="Move to next items"
         >
-          ⟶
+          ↑
         </ControlButton>
       </div>
     </div>
