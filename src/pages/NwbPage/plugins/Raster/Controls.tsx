@@ -120,8 +120,6 @@ export const Controls: FunctionComponent<ControlsProps> = ({
           onShiftTimeRight={onShiftTimeRight}
         />
       </LabeledRow>
-
-      <LabeledRow label="Block Size">{blockSizeSec} seconds</LabeledRow>
     </FullLayout>
   );
 };
