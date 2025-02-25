@@ -1,6 +1,14 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Box, LinearProgress, Typography, Slider } from "@mui/material";
-import * as nifti from "nifti-reader-js";
+import React, { useEffect, useRef, useState, useMemo } from "react";
+import {
+  Box,
+  LinearProgress,
+  Typography,
+  Select,
+  MenuItem,
+  FormControl,
+  InputLabel,
+} from "@mui/material";
+import { Niivue, SLICE_TYPE } from "@niivue/niivue";
 
 interface NiftiViewerProps {
   fileUrl: string;
@@ -8,201 +16,89 @@ interface NiftiViewerProps {
   height?: number;
 }
 
-interface NIFTI1 {
-  dims: number[];
-  datatypeCode: number;
-}
+// Using NiiVue's built-in slice types
+const ViewType = {
+  Axial: SLICE_TYPE.AXIAL,
+  Coronal: SLICE_TYPE.CORONAL,
+  Sagittal: SLICE_TYPE.SAGITTAL,
+  Multiplanar: SLICE_TYPE.MULTIPLANAR,
+  Render: SLICE_TYPE.RENDER,
+} as const;
 
-interface NIFTI2 {
-  dims: number[];
-  datatypeCode: number;
-}
+type ViewTypeValue = (typeof ViewType)[keyof typeof ViewType];
 
 const NiftiViewer: React.FC<NiftiViewerProps> = ({
   fileUrl,
-  width,
-  height,
+  width = 800,
+  height = 600,
 }) => {
-  const [downloadProgress, setDownloadProgress] = useState<number>(0);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentSlice, setCurrentSlice] = useState<number>(0);
-  const [niftiHeader, setNiftiHeader] = useState<NIFTI1 | NIFTI2 | null>(null);
-  const [niftiImage, setNiftiImage] = useState<ArrayBuffer | null>(null);
-  const [totalSlices, setTotalSlices] = useState<number>(0);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const canvasId = useMemo(
+    () => `gl-canvas-${Math.random().toString(36).slice(2, 11)}`,
+    [],
+  );
+  const [viewType, setViewType] = useState<ViewTypeValue>(ViewType.Multiplanar);
+  const niivueRef = useRef<Niivue | null>(null);
+  const [canvas, setCanvas] = useState<HTMLCanvasElement | null>(null);
 
+  // Initialize NiiVue viewer
   useEffect(() => {
-    let canceled = false;
-    const downloadAndProcessFile = async () => {
+    if (!canvas) {
+      return;
+    }
+
+    const nv = new Niivue({
+      dragAndDropEnabled: true,
+    });
+
+    niivueRef.current = nv;
+    nv.attachTo(canvasId);
+
+    // Load the volume
+    const loadVolume = async () => {
       try {
         setLoading(true);
         setError(null);
 
-        // Download the file with progress tracking
-        const response = await fetch(fileUrl);
-        const reader = response.body?.getReader();
-        const contentLength = Number(response.headers.get("Content-Length"));
+        await nv.loadVolumes([
+          {
+            url: fileUrl,
+            colormap: "gray",
+          },
+        ]);
 
-        if (!reader) {
-          throw new Error("Unable to read response");
-        }
-
-        let receivedLength = 0;
-        const chunks: Uint8Array[] = [];
-
-        while (true) {
-          const { done, value } = await reader.read();
-          if (canceled) {
-            reader.cancel();
-            return;
-          }
-
-          if (done) break;
-
-          chunks.push(value);
-          receivedLength += value.length;
-
-          if (contentLength) {
-            setDownloadProgress((receivedLength / contentLength) * 100);
-          }
-        }
-        if (canceled) return;
-
-        // Combine chunks into a single Uint8Array
-        const allChunks = new Uint8Array(receivedLength);
-        let position = 0;
-        for (const chunk of chunks) {
-          allChunks.set(chunk, position);
-          position += chunk.length;
-        }
-
-        // Convert to ArrayBuffer for nifti-reader-js
-        let data = allChunks.buffer;
-
-        // Check if the file is compressed
-        if (nifti.isCompressed(data)) {
-          data = nifti.decompress(data);
-        }
-
-        if (!nifti.isNIFTI(data)) {
-          throw new Error("Not a valid NIFTI file");
-        }
-
-        // Parse NIFTI header and image
-        const header = nifti.readHeader(data);
-        if (!header) {
-          throw new Error("Failed to read NIFTI header");
-        }
-
-        const image = nifti.readImage(header, data);
-
-        setNiftiHeader(header);
-        setNiftiImage(image);
-        setTotalSlices(header.dims[3]);
-        setCurrentSlice(Math.floor(header.dims[3] / 2));
+        nv.setSliceType(viewType);
         setLoading(false);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "An error occurred");
+        setError(
+          err instanceof Error ? err.message : "Failed to load NIFTI file",
+        );
         setLoading(false);
       }
     };
 
-    downloadAndProcessFile();
+    loadVolume();
+
     return () => {
-      canceled = true;
+      if (niivueRef.current) {
+        // Clear all volumes and dispose of WebGL resources
+        niivueRef.current.volumes = [];
+        niivueRef.current.drawScene();
+        niivueRef.current = null;
+      }
     };
-  }, [fileUrl]);
+  }, [fileUrl, canvasId, viewType, canvas]);
 
+  // Update view type when changed
   useEffect(() => {
-    if (!niftiHeader || !niftiImage || !canvasRef.current) return;
+    if (niivueRef.current) {
+      niivueRef.current.setSliceType(viewType);
+    }
+  }, [viewType]);
 
-    const drawCanvas = () => {
-      const canvas = canvasRef.current!;
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      const cols = niftiHeader.dims[1];
-      const rows = niftiHeader.dims[2];
-
-      canvas.width = cols;
-      canvas.height = rows;
-
-      const imageData = ctx.createImageData(cols, rows);
-
-      // Create appropriate TypedArray based on datatype
-      let typedData;
-      switch (niftiHeader.datatypeCode) {
-        case nifti.NIFTI1.TYPE_UINT8:
-          typedData = new Uint8Array(niftiImage);
-          break;
-        case nifti.NIFTI1.TYPE_INT16:
-          typedData = new Int16Array(niftiImage);
-          break;
-        case nifti.NIFTI1.TYPE_INT32:
-          typedData = new Int32Array(niftiImage);
-          break;
-        case nifti.NIFTI1.TYPE_FLOAT32:
-          typedData = new Float32Array(niftiImage);
-          break;
-        case nifti.NIFTI1.TYPE_FLOAT64:
-          typedData = new Float64Array(niftiImage);
-          break;
-        case nifti.NIFTI1.TYPE_INT8:
-          typedData = new Int8Array(niftiImage);
-          break;
-        case nifti.NIFTI1.TYPE_UINT16:
-          typedData = new Uint16Array(niftiImage);
-          break;
-        case nifti.NIFTI1.TYPE_UINT32:
-          typedData = new Uint32Array(niftiImage);
-          break;
-        default:
-          setError(`Unsupported datatype: ${niftiHeader.datatypeCode}`);
-          return;
-      }
-
-      const sliceSize = cols * rows;
-      const sliceOffset = sliceSize * currentSlice;
-
-      // Find data range for scaling
-      let min = Infinity;
-      let max = -Infinity;
-      for (let i = 0; i < sliceSize; i++) {
-        const value = typedData[sliceOffset + i];
-        min = Math.min(min, value);
-        max = Math.max(max, value);
-      }
-
-      // Draw pixels with scaling
-      for (let row = 0; row < rows; row++) {
-        const rowOffset = row * cols;
-
-        for (let col = 0; col < cols; col++) {
-          const offset = sliceOffset + rowOffset + col;
-          const value = typedData[offset];
-
-          // Scale value to 0-255 range
-          const normalizedValue = Math.floor(
-            ((value - min) / (max - min)) * 255,
-          );
-
-          const pixelIndex = (rowOffset + col) * 4;
-          imageData.data[pixelIndex] = normalizedValue;
-          imageData.data[pixelIndex + 1] = normalizedValue;
-          imageData.data[pixelIndex + 2] = normalizedValue;
-          imageData.data[pixelIndex + 3] = 255;
-        }
-      }
-
-      ctx.putImageData(imageData, 0, 0);
-    };
-
-    drawCanvas();
-  }, [niftiHeader, niftiImage, currentSlice]);
-
-  const handleSliderChange = (_event: Event, value: number | number[]) => {
-    setCurrentSlice(value as number);
+  const handleViewTypeChange = (event: { target: { value: string } }) => {
+    setViewType(Number(event.target.value) as ViewTypeValue);
   };
 
   if (error) {
@@ -213,34 +109,40 @@ const NiftiViewer: React.FC<NiftiViewerProps> = ({
     );
   }
 
-  if (loading) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Typography>Loading NIFTI file...</Typography>
-        <LinearProgress variant="determinate" value={downloadProgress} />
-      </Box>
-    );
-  }
-
   return (
-    <Box sx={{ width, height, p: 2 }}>
+    <Box sx={{ width, p: 2 }}>
       <Box sx={{ mb: 2 }}>
+        {loading ? (
+          <div>
+            <Typography>Loading NIFTI file...</Typography>
+            <LinearProgress />
+          </div>
+        ) : (
+          <FormControl sx={{ minWidth: 200 }}>
+            <InputLabel>View Type</InputLabel>
+            <Select
+              value={viewType.toString()}
+              onChange={handleViewTypeChange}
+              label="View Type"
+            >
+              <MenuItem value={SLICE_TYPE.AXIAL}>Axial</MenuItem>
+              <MenuItem value={SLICE_TYPE.CORONAL}>Coronal</MenuItem>
+              <MenuItem value={SLICE_TYPE.SAGITTAL}>Sagittal</MenuItem>
+              <MenuItem value={SLICE_TYPE.MULTIPLANAR}>Multiplanar</MenuItem>
+              <MenuItem value={SLICE_TYPE.RENDER}>3D Render</MenuItem>
+            </Select>
+          </FormControl>
+        )}
+      </Box>
+      <Box sx={{ position: "relative", height }}>
         <canvas
-          ref={canvasRef}
+          id={canvasId}
+          ref={(elmt) => setCanvas(elmt)}
           style={{
-            maxWidth: "100%",
-            height: "auto",
+            width: "100%",
+            height: "100%",
             border: "1px solid #ccc",
           }}
-        />
-      </Box>
-      <Box sx={{ px: 2 }}>
-        <Slider
-          value={currentSlice}
-          onChange={handleSliderChange}
-          min={0}
-          max={totalSlices - 1}
-          valueLabelDisplay="auto"
         />
       </Box>
     </Box>
