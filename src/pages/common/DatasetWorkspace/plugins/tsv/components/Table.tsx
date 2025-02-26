@@ -9,7 +9,10 @@ import {
   TableSortLabel,
   Paper,
   Box,
+  IconButton,
+  Tooltip,
 } from "@mui/material";
+import RestartAltIcon from "@mui/icons-material/RestartAlt";
 
 type Order = "asc" | "desc";
 
@@ -19,7 +22,7 @@ interface TableProps {
 }
 
 const TsvTable: React.FC<TableProps> = ({ headers, rows }) => {
-  const [orderBy, setOrderBy] = useState<number>(0);
+  const [orderBy, setOrderBy] = useState<number | null>(null);
   const [order, setOrder] = useState<Order>("asc");
 
   const handleSort = (columnIndex: number) => {
@@ -28,7 +31,14 @@ const TsvTable: React.FC<TableProps> = ({ headers, rows }) => {
     setOrderBy(columnIndex);
   };
 
+  const handleReset = () => {
+    setOrderBy(null);
+    setOrder("asc");
+  };
+
   const sortedRows = useMemo(() => {
+    if (orderBy === null) return rows;
+
     const comparator = (a: string[], b: string[]): number => {
       const valueA = a[orderBy];
       const valueB = b[orderBy];
@@ -55,10 +65,22 @@ const TsvTable: React.FC<TableProps> = ({ headers, rows }) => {
         <Table stickyHeader size="small">
           <TableHead>
             <TableRow>
+              <TableCell padding="none" sx={{ width: 40 }}>
+                <Tooltip title="Reset to original order">
+                  <IconButton
+                    onClick={handleReset}
+                    size="small"
+                    sx={{ visibility: orderBy === null ? "hidden" : "visible" }}
+                  >
+                    <RestartAltIcon fontSize="small" />
+                  </IconButton>
+                </Tooltip>
+              </TableCell>
               {headers.map((header, index) => (
                 <TableCell
                   key={index}
                   sortDirection={orderBy === index ? order : false}
+                  sx={{ minWidth: 100 }}
                 >
                   <TableSortLabel
                     active={orderBy === index}
@@ -81,6 +103,7 @@ const TsvTable: React.FC<TableProps> = ({ headers, rows }) => {
                   },
                 }}
               >
+                <TableCell padding="none"></TableCell>
                 {row.map((cell, cellIndex) => (
                   <TableCell key={cellIndex}>{cell}</TableCell>
                 ))}
