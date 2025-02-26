@@ -1,6 +1,7 @@
 # Changes
 
 ## February 25, 2025
+- Added reset button to TSV table view to restore original row order
 - Added collapsible left panel with toggle button to improve workspace utilization
 - Added AI context integration for NwbPage to provide information about currently viewed NWB file including version, contents overview, and available interactions
 - Rewrote NIFTI viewer implementation using niivue library to provide advanced visualization features including multiplanar views and 3D rendering
