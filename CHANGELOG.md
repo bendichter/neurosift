@@ -1,6 +1,9 @@
 # Changes
 
 ## February 25, 2025
+- Improved TimeIntervals visualization with interactive Plotly-based view that shows hover information and uses transparency to indicate overlapping intervals (fixes #278)
+- Improved TimeIntervals plot by removing the top line and adjusting rectangles to start at y=0 for cleaner visualization
+- Enhanced TimeIntervals controls by adding start time, duration, and interval count information and removing the gap between controls and plot
 - Added reset button to TSV table view to restore original row order
 - Added collapsible left panel with toggle button to improve workspace utilization
 - Added AI context integration for NwbPage to provide information about currently viewed NWB file including version, contents overview, and available interactions

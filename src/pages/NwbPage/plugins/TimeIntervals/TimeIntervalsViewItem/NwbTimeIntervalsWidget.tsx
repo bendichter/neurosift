@@ -28,6 +28,7 @@ const yAxisInfo = {
 };
 
 const hideToolbar = false;
+const showTimeseriesToolbar = false; // Hide the magnifying glass controls
 
 const NwbTimeIntervalsWidget: FunctionComponent<Props> = ({
   width,
@@ -40,7 +41,8 @@ const NwbTimeIntervalsWidget: FunctionComponent<Props> = ({
     HTMLCanvasElement | undefined
   >();
 
-  const { startTime, endTime } = useMemo(() => {
+  // Calculate min/max times for reference, but don't use them to initialize the time range
+  useMemo(() => {
     let startTime = Number.MAX_VALUE;
     let endTime = Number.MIN_VALUE;
     for (let i = 0; i < startTimes.length; i++) {
@@ -50,15 +52,8 @@ const NwbTimeIntervalsWidget: FunctionComponent<Props> = ({
     return { startTime, endTime };
   }, [startTimes, stopTimes]);
 
-  const { initializeTimeseriesSelection } = useTimeseriesSelection();
-  useEffect(() => {
-    initializeTimeseriesSelection({
-      startTimeSec: startTime,
-      endTimeSec: endTime,
-      initialVisibleStartTimeSec: startTime,
-      initialVisibleEndTimeSec: endTime,
-    });
-  }, [initializeTimeseriesSelection, startTime, endTime]);
+  // We don't need to initialize the time range here as it's already initialized in the parent component
+  // and we want to maintain the same time range when switching between views
   const { visibleStartTimeSec, visibleEndTimeSec } = useTimeRange();
 
   const { canvasWidth, canvasHeight, margins } = useTimeScrollView2({
@@ -189,7 +184,8 @@ const NwbTimeIntervalsWidget: FunctionComponent<Props> = ({
       gridlineOpts={gridlineOpts}
       yAxisInfo={yAxisInfo}
       hideToolbar={hideToolbar}
-      showTimeSelectionBar={true}
+      showTimeseriesToolbar={showTimeseriesToolbar} // Hide the magnifying glass controls
+      showTimeSelectionBar={false} // Hide the time selection bar since we have controls in the parent component
     />
   );
 };
