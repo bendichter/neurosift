@@ -111,7 +111,7 @@ const TimeseriesPlot: FunctionComponent<Partial<Props>> = ({
         showticklabels: true,
         showgrid: true,
       },
-      showlegend: data.length > 1,
+      showlegend: true,
     }),
     [channelSeparation, height, visibleEndTime, visibleStartTime, width],
   );
