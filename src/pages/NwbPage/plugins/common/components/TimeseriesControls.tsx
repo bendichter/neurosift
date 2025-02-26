@@ -306,7 +306,7 @@ export const LabeledRow: FunctionComponent<{
   children: React.ReactNode;
 }> = ({ label, children }) => (
   <>
-    <div style={{ fontWeight: "bold" }}>{label}:</div>
+    <div style={{ fontWeight: "bold" }}>{label && `${label}:`}</div>
     <div>{children}</div>
   </>
 );

@@ -102,13 +102,22 @@ export const Controls: FunctionComponent<ControlsProps> = ({
 }) => {
   return (
     <FullLayout>
-      <LabeledRow label="Recording">
-        Start: {info.timeseriesStartTime.toFixed(2)} s, Duration:{" "}
-        {info.timeseriesDuration.toFixed(2)} s
-      </LabeledRow>
-
-      <LabeledRow label="Sampling frequency">
-        {formatSamplingFrequency(info.samplingFrequency)}
+      <LabeledRow label="">
+        <div style={{ display: 'flex', gap: '12px', alignItems: 'center', flexWrap: 'wrap' }}>
+          <div>
+            Start: {info.timeseriesStartTime.toFixed(2)} s, Duration: {info.timeseriesDuration.toFixed(2)} s, {formatSamplingFrequency(info.samplingFrequency)}
+          </div>
+          <TimeRangeControls
+            visibleTimeStart={visibleTimeStart}
+            visibleDuration={visibleDuration}
+            timeseriesStartTime={info.timeseriesStartTime}
+            timeseriesDuration={info.timeseriesDuration}
+            onDecreaseVisibleDuration={onDecreaseVisibleDuration}
+            onIncreaseVisibleDuration={onIncreaseVisibleDuration}
+            onShiftTimeLeft={onShiftTimeLeft}
+            onShiftTimeRight={onShiftTimeRight}
+          />
+        </div>
       </LabeledRow>
 
       {info.totalNumChannels > 1 && (
@@ -143,18 +152,6 @@ export const Controls: FunctionComponent<ControlsProps> = ({
         </LabeledRow>
       )}
 
-      <LabeledRow label="Samples">
-        <TimeRangeControls
-          visibleTimeStart={visibleTimeStart}
-          visibleDuration={visibleDuration}
-          timeseriesStartTime={info.timeseriesStartTime}
-          timeseriesDuration={info.timeseriesDuration}
-          onDecreaseVisibleDuration={onDecreaseVisibleDuration}
-          onIncreaseVisibleDuration={onIncreaseVisibleDuration}
-          onShiftTimeLeft={onShiftTimeLeft}
-          onShiftTimeRight={onShiftTimeRight}
-        />
-      </LabeledRow>
     </FullLayout>
   );
 };
