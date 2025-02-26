@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { FunctionComponent, useEffect, useMemo } from "react";
-import Plot from "react-plotly.js";
-import { Layout, Shape } from "plotly.js";
 import { useTimeRange } from "@shared/context-timeseries-selection-2";
+import { Layout, Shape } from "plotly.js";
+import { FunctionComponent, useMemo } from "react";
+import Plot from "react-plotly.js";
 
 type Props = {
   width: number;
@@ -35,15 +35,17 @@ const TimeIntervalsPlotly: FunctionComponent<Props> = ({
         return `Start: ${start.toFixed(3)}<br>Stop: ${stopTimes[i].toFixed(3)}<br>Duration: ${(stopTimes[i] - start).toFixed(3)}`;
       });
 
-      return [{
-        x: startTimes.map((_, i) => (startTimes[i] + stopTimes[i]) / 2), // Center of interval
-        y: Array(startTimes.length).fill(0.3), // Position in the middle of the rectangle
-        mode: 'markers',
-        marker: { opacity: 0 }, // Invisible markers
-        text: hoverTexts,
-        hoverinfo: 'text',
-        showlegend: false
-      }];
+      return [
+        {
+          x: startTimes.map((_, i) => (startTimes[i] + stopTimes[i]) / 2), // Center of interval
+          y: Array(startTimes.length).fill(0.3), // Position in the middle of the rectangle
+          mode: "markers",
+          marker: { opacity: 0 }, // Invisible markers
+          text: hoverTexts,
+          hoverinfo: "text",
+          showlegend: false,
+        },
+      ];
     }
 
     // Create a trace for each distinct label
@@ -55,11 +57,11 @@ const TimeIntervalsPlotly: FunctionComponent<Props> = ({
           indices.push(i);
         }
       }
-      
+
       // Create hover text with all available data
-      const hoverTexts = indices.map(i => {
+      const hoverTexts = indices.map((i) => {
         let text = `Label: ${labels[i]}<br>Start: ${startTimes[i].toFixed(3)}<br>Stop: ${stopTimes[i].toFixed(3)}<br>Duration: ${(stopTimes[i] - startTimes[i]).toFixed(3)}`;
-        
+
         // Add any additional data columns
         if (additionalData) {
           Object.entries(additionalData).forEach(([key, values]) => {
@@ -68,22 +70,22 @@ const TimeIntervalsPlotly: FunctionComponent<Props> = ({
             }
           });
         }
-        
+
         return text;
       });
 
       // Calculate the y-position for hover points based on the rectangle position
       const rectHeight = 0.4 / distinctLabels.length;
-      const yPos = 0.1 + (rowIndex * rectHeight) + (rectHeight / 2); // Middle of the rectangle
-      
+      const yPos = 0.1 + rowIndex * rectHeight + rectHeight / 2; // Middle of the rectangle
+
       return {
-        x: indices.map(i => (startTimes[i] + stopTimes[i]) / 2), // Center of interval
+        x: indices.map((i) => (startTimes[i] + stopTimes[i]) / 2), // Center of interval
         y: Array(indices.length).fill(yPos),
-        mode: 'markers',
+        mode: "markers",
         marker: { opacity: 0 }, // Invisible markers
         text: hoverTexts,
-        hoverinfo: 'text',
-        name: label
+        hoverinfo: "text",
+        name: label,
       };
     });
   }, [labels, startTimes, stopTimes, distinctLabels, additionalData]);
@@ -91,40 +93,40 @@ const TimeIntervalsPlotly: FunctionComponent<Props> = ({
   // Create shapes for the intervals
   const shapes = useMemo(() => {
     const result: Partial<Shape>[] = [];
-    
+
     if (!labels || distinctLabels.length === 0) {
       // Single row case
       for (let i = 0; i < startTimes.length; i++) {
         result.push({
-          type: 'rect',
+          type: "rect",
           x0: startTimes[i],
           x1: stopTimes[i],
           y0: 0.0, // Start at y=0
           y1: 0.4, // Height of rectangle
-          fillcolor: 'rgba(100, 100, 100, 0.7)',
+          fillcolor: "rgba(100, 100, 100, 0.7)",
           line: {
             width: 1,
-            color: 'rgba(70, 70, 70, 0.9)'
+            color: "rgba(70, 70, 70, 0.9)",
           },
-          layer: 'below' as const
+          layer: "below" as const,
         });
       }
     } else {
       // Multiple labels case - stack them vertically just above the x-axis
       const rectHeight = 0.4 / distinctLabels.length; // Divide vertical space
-      
+
       for (let i = 0; i < startTimes.length; i++) {
         if (!labels[i]) continue;
-        
+
         const rowIndex = distinctLabels.indexOf(labels[i]);
         if (rowIndex === -1) continue;
-        
+
         // Calculate vertical position based on label
-        const y0 = 0.0 + (rowIndex * rectHeight);
+        const y0 = 0.0 + rowIndex * rectHeight;
         const y1 = y0 + rectHeight;
-        
+
         result.push({
-          type: 'rect',
+          type: "rect",
           x0: startTimes[i],
           x1: stopTimes[i],
           y0: y0,
@@ -132,14 +134,14 @@ const TimeIntervalsPlotly: FunctionComponent<Props> = ({
           fillcolor: lightColors[rowIndex % lightColors.length],
           line: {
             width: 1,
-            color: darkenColor(lightColors[rowIndex % lightColors.length])
+            color: darkenColor(lightColors[rowIndex % lightColors.length]),
           },
-          layer: 'below' as const,
-          opacity: 0.7
+          layer: "below" as const,
+          opacity: 0.7,
         });
       }
     }
-    
+
     return result;
   }, [labels, startTimes, stopTimes, distinctLabels]);
 
@@ -147,58 +149,69 @@ const TimeIntervalsPlotly: FunctionComponent<Props> = ({
   const { visibleStartTimeSec, visibleEndTimeSec } = useTimeRange();
 
   // Layout configuration
-  const layout: Partial<Layout> = useMemo(() => ({
-    width,
-    height,
-    margin: {
-      l: 30,  // Further reduced from 50
-      r: 10,  // Further reduced from 20
-      t: 10,  // Kept the same
-      b: 50,  // Kept the same for x-axis label
-    },
-    xaxis: {
-      title: {
-        text: "Time (s)",
-        font: {
-          size: 14,
-          color: '#000'
-        },
-        standoff: 15  // Add some space between the axis and the title
+  const layout: Partial<Layout> = useMemo(
+    () => ({
+      width,
+      height,
+      margin: {
+        l: 30, // Further reduced from 50
+        r: 10, // Further reduced from 20
+        t: 10, // Kept the same
+        b: 50, // Kept the same for x-axis label
       },
-      showgrid: true,
-      // Set the range to match the visible time range from the context
-      range: visibleStartTimeSec !== undefined && visibleEndTimeSec !== undefined 
-        ? [visibleStartTimeSec, visibleEndTimeSec] 
-        : undefined,
-      zeroline: false, // Remove the zero line
-      showline: true, // Show the axis line
-      linecolor: '#000', // Black line color
-      linewidth: 2, // Make the axis line thicker
-      mirror: false, // Don't mirror the axis line to the top
-    },
-    yaxis: {
-      showgrid: false,
-      tickmode: "array",
-      tickvals: distinctLabels.map((_, i) => i),
-      ticktext: distinctLabels,
-      // Position all rectangles just above the x-axis
-      range: [0, distinctLabels.length > 0 ? 0.9 : 0.4],
-      zeroline: false, // Remove the zero line
-      showticklabels: false, // Hide y-axis tick labels
-      showline: false, // Hide the y-axis line
-    },
-    hovermode: "closest",
-    showlegend: true,
-    legend: {
-      orientation: "h",
-      y: -0.15,
-      xanchor: 'center',
-      x: 0.5,
-      font: { size: 10 },
-      tracegroupgap: 5
-    },
-    shapes: shapes
-  }), [width, height, distinctLabels, shapes, visibleStartTimeSec, visibleEndTimeSec]);
+      xaxis: {
+        title: {
+          text: "Time (s)",
+          font: {
+            size: 14,
+            color: "#000",
+          },
+          standoff: 15, // Add some space between the axis and the title
+        },
+        showgrid: true,
+        // Set the range to match the visible time range from the context
+        range:
+          visibleStartTimeSec !== undefined && visibleEndTimeSec !== undefined
+            ? [visibleStartTimeSec, visibleEndTimeSec]
+            : undefined,
+        zeroline: false, // Remove the zero line
+        showline: true, // Show the axis line
+        linecolor: "#000", // Black line color
+        linewidth: 2, // Make the axis line thicker
+        mirror: false, // Don't mirror the axis line to the top
+      },
+      yaxis: {
+        showgrid: false,
+        tickmode: "array",
+        tickvals: distinctLabels.map((_, i) => i),
+        ticktext: distinctLabels,
+        // Position all rectangles just above the x-axis
+        range: [0, distinctLabels.length > 0 ? 0.9 : 0.4],
+        zeroline: false, // Remove the zero line
+        showticklabels: false, // Hide y-axis tick labels
+        showline: false, // Hide the y-axis line
+      },
+      hovermode: "closest",
+      showlegend: true,
+      legend: {
+        orientation: "h",
+        y: -0.15,
+        xanchor: "center",
+        x: 0.5,
+        font: { size: 10 },
+        tracegroupgap: 5,
+      },
+      shapes: shapes,
+    }),
+    [
+      width,
+      height,
+      distinctLabels,
+      shapes,
+      visibleStartTimeSec,
+      visibleEndTimeSec,
+    ],
+  );
 
   return (
     <Plot
@@ -208,11 +221,7 @@ const TimeIntervalsPlotly: FunctionComponent<Props> = ({
         displayModeBar: true,
         displaylogo: false,
         responsive: true,
-        modeBarButtonsToRemove: [
-          'lasso2d', 
-          'select2d',
-          'toggleSpikelines',
-        ],
+        modeBarButtonsToRemove: ["lasso2d", "select2d", "toggleSpikelines"],
       }}
       style={{
         width: "100%",
@@ -227,12 +236,12 @@ const darkenColor = (color: string): string => {
   // Extract rgba values
   const match = color.match(/rgba\((\d+),\s*(\d+),\s*(\d+),\s*([\d.]+)\)/);
   if (!match) return color;
-  
+
   const r = Math.max(0, parseInt(match[1]) - 30);
   const g = Math.max(0, parseInt(match[2]) - 30);
   const b = Math.max(0, parseInt(match[3]) - 30);
   const a = parseFloat(match[4]);
-  
+
   return `rgba(${r}, ${g}, ${b}, ${a + 0.1})`;
 };
 

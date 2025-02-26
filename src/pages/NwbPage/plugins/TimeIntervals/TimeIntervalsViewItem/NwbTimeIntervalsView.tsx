@@ -7,7 +7,10 @@ import {
 } from "@hdf5Interface";
 import NwbTimeIntervalsWidget from "./NwbTimeIntervalsWidget";
 import TimeIntervalsPlotly from "./TimeIntervalsPlotly";
-import { useTimeRange, useTimeseriesSelection } from "@shared/context-timeseries-selection-2";
+import {
+  useTimeRange,
+  useTimeseriesSelection,
+} from "@shared/context-timeseries-selection-2";
 import { TimeRangeControls } from "../../common/components/TimeseriesControls";
 
 type Props = {
@@ -17,7 +20,7 @@ type Props = {
   path: string;
 };
 
-type ViewMode = 'canvas' | 'plotly';
+type ViewMode = "canvas" | "plotly";
 
 const NwbTimeIntervalsView: FunctionComponent<Props> = ({
   width,
@@ -26,8 +29,8 @@ const NwbTimeIntervalsView: FunctionComponent<Props> = ({
   path,
 }) => {
   // Default to Plotly view as it addresses the issues in the GitHub ticket
-  const [viewMode, setViewMode] = useState<ViewMode>('plotly');
-  
+  const [viewMode, setViewMode] = useState<ViewMode>("plotly");
+
   // Get all hooks at the top level to avoid React hooks rules violations
   const { data: startTimeData } = useHdf5DatasetData(
     nwbUrl,
@@ -41,18 +44,18 @@ const NwbTimeIntervalsView: FunctionComponent<Props> = ({
   const [selectedColumn, setSelectedColumn] = useState<string | undefined>(
     undefined,
   );
-  
+
   // Get the visible time range from the context for time controls
   const { visibleStartTimeSec, visibleEndTimeSec } = useTimeRange();
-  
+
   // Get all timeseriesSelection hooks
-  const { 
-    initializeTimeseriesSelection, 
+  const {
+    initializeTimeseriesSelection,
     setVisibleTimeRange,
-    zoomVisibleTimeRange, 
-    translateVisibleTimeRangeFrac 
+    zoomVisibleTimeRange,
+    translateVisibleTimeRangeFrac,
   } = useTimeseriesSelection();
-  
+
   const { labelData, availableColumns, autoSelectedColumn } = useLabelData(
     nwbUrl,
     path,
@@ -63,16 +66,16 @@ const NwbTimeIntervalsView: FunctionComponent<Props> = ({
   // Load additional data columns for hover information in Plotly view
   const additionalData = useMemo(() => {
     if (!startTimeData) return {};
-    
+
     const result: Record<string, any[]> = {};
-    
+
     // Add all available columns to the additional data
-    availableColumns.forEach(col => {
+    availableColumns.forEach((col) => {
       if (col.values.length === startTimeData.length) {
         result[col.name] = col.values;
       }
     });
-    
+
     return result;
   }, [availableColumns, startTimeData]);
 
@@ -97,19 +100,19 @@ const NwbTimeIntervalsView: FunctionComponent<Props> = ({
   if (!startTimeData || !stopTimeData) {
     return <div>loading data (NwbTimeIntervalsView)...</div>;
   }
-  
+
   const handleDecreaseVisibleDuration = () => {
     zoomVisibleTimeRange(0.5); // Zoom in
   };
-  
+
   const handleIncreaseVisibleDuration = () => {
     zoomVisibleTimeRange(2); // Zoom out
   };
-  
+
   const handleShiftTimeLeft = () => {
     translateVisibleTimeRangeFrac(-0.5); // Move left
   };
-  
+
   const handleShiftTimeRight = () => {
     translateVisibleTimeRangeFrac(0.5); // Move right
   };
@@ -130,40 +133,55 @@ const NwbTimeIntervalsView: FunctionComponent<Props> = ({
           zIndex: 10,
         }}
       >
-        <div style={{ 
-          display: "flex", 
-          flexDirection: "column", 
-          gap: "0px",
-          background: "#f5f5f5",
-          padding: "8px 4px",
-          borderRadius: "5px"
-        }}>
-          <div style={{ 
-            display: "flex", 
-            alignItems: "center", 
-            gap: "15px", 
-            fontSize: "0.9rem", 
-            color: "#495057",
-            marginBottom: "5px"
-          }}>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "0px",
+            background: "#f5f5f5",
+            padding: "8px 4px",
+            borderRadius: "5px",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "15px",
+              fontSize: "0.9rem",
+              color: "#495057",
+              marginBottom: "5px",
+            }}
+          >
             <div>
-              <span style={{ fontWeight: "bold" }}>Start:</span> {compute_min(startTimeData).toFixed(2)}s
+              <span style={{ fontWeight: "bold" }}>Start:</span>{" "}
+              {compute_min(startTimeData).toFixed(2)}s
             </div>
             <div>
-              <span style={{ fontWeight: "bold" }}>Duration:</span> {(compute_max(stopTimeData) - compute_min(startTimeData)).toFixed(2)}s
+              <span style={{ fontWeight: "bold" }}>Duration:</span>{" "}
+              {(compute_max(stopTimeData) - compute_min(startTimeData)).toFixed(
+                2,
+              )}
+              s
             </div>
             <div>
-              <span style={{ fontWeight: "bold" }}>Intervals:</span> {startTimeData.length}
+              <span style={{ fontWeight: "bold" }}>Intervals:</span>{" "}
+              {startTimeData.length}
             </div>
           </div>
           <div style={{ margin: "0 -8px" }}>
             <TimeRangeControls
               visibleTimeStart={visibleStartTimeSec}
-              visibleDuration={visibleEndTimeSec !== undefined && visibleStartTimeSec !== undefined 
-                ? visibleEndTimeSec - visibleStartTimeSec 
-                : undefined}
+              visibleDuration={
+                visibleEndTimeSec !== undefined &&
+                visibleStartTimeSec !== undefined
+                  ? visibleEndTimeSec - visibleStartTimeSec
+                  : undefined
+              }
               timeseriesStartTime={compute_min(startTimeData)}
-              timeseriesDuration={compute_max(stopTimeData) - compute_min(startTimeData)}
+              timeseriesDuration={
+                compute_max(stopTimeData) - compute_min(startTimeData)
+              }
               onDecreaseVisibleDuration={handleDecreaseVisibleDuration}
               onIncreaseVisibleDuration={handleIncreaseVisibleDuration}
               onShiftTimeLeft={handleShiftTimeLeft}
@@ -178,10 +196,10 @@ const NwbTimeIntervalsView: FunctionComponent<Props> = ({
           width,
           height: height - bottomBarHeight - controlsHeight,
           top: controlsHeight,
-          marginTop: "0"
+          marginTop: "0",
         }}
       >
-        {viewMode === 'canvas' ? (
+        {viewMode === "canvas" ? (
           <NwbTimeIntervalsWidget
             labels={labelData}
             startTimes={startTimeData}
@@ -232,19 +250,23 @@ const NwbTimeIntervalsView: FunctionComponent<Props> = ({
           ) : (
             <span>No valid columns found</span>
           )}
-          
-          <div style={{ marginLeft: 'auto' }}>
+
+          <div style={{ marginLeft: "auto" }}>
             <button
-              onClick={() => setViewMode(viewMode === 'canvas' ? 'plotly' : 'canvas')}
+              onClick={() =>
+                setViewMode(viewMode === "canvas" ? "plotly" : "canvas")
+              }
               style={{
-                padding: '4px 8px',
-                background: '#f0f0f0',
-                border: '1px solid #ccc',
-                borderRadius: '4px',
-                cursor: 'pointer'
+                padding: "4px 8px",
+                background: "#f0f0f0",
+                border: "1px solid #ccc",
+                borderRadius: "4px",
+                cursor: "pointer",
               }}
             >
-              {viewMode === 'canvas' ? 'Switch to Interactive View' : 'Switch to Simple View'}
+              {viewMode === "canvas"
+                ? "Switch to Interactive View"
+                : "Switch to Simple View"}
             </button>
           </div>
         </div>
