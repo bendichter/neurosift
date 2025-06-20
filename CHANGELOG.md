@@ -1,6 +1,8 @@
 # Changes
 
 ## June 19, 2025
+- Improved space utilization for controls with more compact vertical spacing and reduced margins in raster plots
+- Prevented raster plots from zooming out past both x and y-axis limits for better visualization
 - Added toggle legend button for plotly timeseries plots (Issue #328)
 - Fixed margin difference between plotly and native NS plots by removing width reduction and right margin (Issue #330)
 

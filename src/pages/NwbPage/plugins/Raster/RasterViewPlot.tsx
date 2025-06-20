@@ -79,10 +79,10 @@ const RasterViewPlot = ({ plotData }: Props) => {
           Math.max(25, Math.min(50, Math.floor(400 / plotData.unitIds.length))),
       ), // Dynamic height per unit
       margin: {
-        l: 70,
-        r: 30,
-        t: 50,
-        b: 50,
+        l: 40,
+        r: 10,
+        t: 0,
+        b: 30,
       },
     };
 
