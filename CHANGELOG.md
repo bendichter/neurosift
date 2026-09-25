@@ -4,6 +4,8 @@
 
 - Fixed the DANDI-index job runner's script sandbox, which made every interface call other than `print` hang until the time limit. The interface now runs inside the sandbox with read access to the index data only.
 - The job runner can serve HTTP (`HTTP_PORT`) with the same endpoints as neurosift-search, so clients no longer need PubNub. PubNub is now optional.
+- DANDI semantic search now also embeds each dandiset's keywords, species, anatomy, approaches, measurement techniques, and measured variables, so queries like "mouse Neuropixels" or "C. elegans whole-brain imaging" return datasets of the right species and method.
+
 
 ## September 4, 2026
 
